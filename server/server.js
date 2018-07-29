@@ -4,6 +4,8 @@ const app = express();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const bodyParser = require('body-parser');
+const user = require('./routes/user.route.js');
+const mongoose = require('mongoose');
 
 const ClientManager = require('./ClientManager')
 const ChatroomManager = require('./ChatroomManager')
@@ -14,12 +16,16 @@ const chatroomManager = ChatroomManager()
 
 const PORT = 3000;
 
-app.listen(PORT, function () {
-  console.log('Server is running on Port', PORT);
-});
+mongoose.connect('mongodb://localhost:27017/multague', { useNewUrlParser: true });
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+
+app.use('/user', user);
+
+app.listen(PORT, function () {
+  console.log('Server is running on Port', PORT);
+});
 
 io.on('connection', function (client) {
   const {
